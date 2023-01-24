@@ -8,6 +8,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestParse(t *testing.T) {
+	var x struct {
+		Name  string
+		Items []int
+	}
+	require.NoError(t,
+		Parse([]string{
+			"[",
+			"--Name", "foo",
+			"--Items", "[", "1", "2", "3", "]", // TODO: name conversion
+			"]",
+		}, &x))
+	assert.Equal(t, "foo", x.Name)
+	assert.Equal(t, []int{1, 2, 3}, x.Items)
+}
+
 func TestParseAny(t *testing.T) {
 	t.Parallel()
 
@@ -153,7 +169,8 @@ func TestParseAny(t *testing.T) {
 		t.Run(fmt.Sprint(idx), func(t *testing.T) {
 			t.Parallel()
 
-			got, err := ParseAny(tt.give)
+			var got any
+			err := Parse(tt.give, &got)
 			require.NoError(t, err, "Parse(%q)", tt.give)
 			assert.Equal(t, tt.want, got, "Parse(%q)", tt.give)
 		})
