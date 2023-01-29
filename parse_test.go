@@ -16,8 +16,8 @@ func TestParse(t *testing.T) {
 	require.NoError(t,
 		Parse([]string{
 			"[",
-			"--Name", "foo",
-			"--Items", "[", "1", "2", "3", "]", // TODO: name conversion
+			"--name", "foo",
+			"--items", "[", "1", "2", "3", "]",
 			"]",
 		}, &x))
 	assert.Equal(t, "foo", x.Name)
@@ -34,6 +34,18 @@ func TestParseAny(t *testing.T) {
 		give []string
 		want interface{}
 	}{
+		{
+			give: []string{"[", "--hello", "World", "]"},
+			want: object{"hello": "World"},
+		},
+		{
+			give: []string{"[", "beep", "boop", "]"},
+			want: array{"beep", "boop"},
+		},
+		{
+			give: []string{"[", "1", "2", "3", "]"},
+			want: array{1, 2, 3},
+		},
 		{
 			give: []string{""},
 			want: "",
@@ -173,6 +185,27 @@ func TestParseAny(t *testing.T) {
 			err := Parse(tt.give, &got)
 			require.NoError(t, err, "Parse(%q)", tt.give)
 			assert.Equal(t, tt.want, got, "Parse(%q)", tt.give)
+		})
+	}
+}
+
+func TestToKebab(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		give string
+		want string
+	}{
+		{"Foo", "foo"},
+		{"FooBar", "foo-bar"},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.give, func(t *testing.T) {
+			t.Parallel()
+
+			assert.Equal(t, tt.want, toKebab(tt.give))
 		})
 	}
 }
