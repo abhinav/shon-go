@@ -3,11 +3,13 @@ package shon
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"reflect"
 	"strconv"
-	"strings"
-	"unicode"
 )
+
+// Number holds numeric values that could be integers or floats.
+type Number = json.Number
 
 var _stringType = reflect.TypeOf("")
 
@@ -109,8 +111,8 @@ func (d *ptrDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
 		return v, err
 	}
 
-	p := reflect.New(d.t.Elem())
-	p.Set(v)
+	p := reflect.New(d.t).Elem()
+	p.Set(v.Addr())
 	return p, nil
 }
 
@@ -307,7 +309,7 @@ func (d *mapDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
 			return v, err
 		}
 
-		val, err := d.k.Decode(ctx, vs)
+		val, err := d.v.Decode(ctx, vs)
 		if err != nil {
 			return v, err
 		}
@@ -320,7 +322,7 @@ func (d *mapDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
 type structDecoder struct {
 	t            reflect.Type
 	fields       []structField
-	fieldsByName map[string]int
+	fieldsByName map[string]int // name => index into .fields
 }
 
 func newStructDecoder(t reflect.Type) (*structDecoder, error) {
@@ -337,7 +339,9 @@ func newStructDecoder(t reflect.Type) (*structDecoder, error) {
 			continue
 		}
 
-		p.fieldsByName[sf.name] = len(p.fields)
+		for _, name := range sf.names {
+			p.fieldsByName[name] = len(p.fields)
+		}
 		p.fields = append(p.fields, sf)
 	}
 	return &p, nil
@@ -372,10 +376,15 @@ func (d *structDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
 }
 
 type structField struct {
-	t    reflect.Type
-	p    decoder
-	idx  int // index in struct.Field(i)
-	name string
+	t   reflect.Type
+	p   decoder
+	idx int // index in struct.Field(i)
+
+	// List of names this field accepts.
+	// If 'shon:".."' is set, this contains just one.
+	// Otherwise it contains the field name
+	// and our guess at its kebab case version.
+	names []string
 }
 
 func newStructField(idx int, f reflect.StructField) (structField, bool, error) {
@@ -388,19 +397,21 @@ func newStructField(idx int, f reflect.StructField) (structField, bool, error) {
 		return structField{}, false, err
 	}
 
-	name, ok := f.Tag.Lookup("shon")
-	if !ok {
-		name = toKebab(f.Name)
-	}
-	if name == "-" {
-		return structField{}, false, nil
+	var names []string
+	if name, ok := f.Tag.Lookup("shon"); ok {
+		if name == "-" {
+			return structField{}, false, nil
+		}
+		names = []string{name}
+	} else {
+		names = []string{f.Name, toKebab(f.Name)}
 	}
 
 	return structField{
-		t:    f.Type,
-		p:    fdec,
-		idx:  idx,
-		name: name,
+		t:     f.Type,
+		p:     fdec,
+		idx:   idx,
+		names: names,
 	}, true, nil
 }
 
@@ -427,6 +438,8 @@ func (d *anyDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
 				} else if f, err := strconv.ParseFloat(arg, 64); err == nil {
 					v = reflect.ValueOf(f)
 				} else {
+					// This is impossible unless there's a
+					// bug in isNumeric.
 					return v, fmt.Errorf("bad number %q", arg)
 				}
 			}
@@ -474,22 +487,22 @@ func (d *anyDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
 	return v, nil
 }
 
-func toKebab(name string) string {
-	if len(name) == 0 {
-		return name
-	}
+type emptyArrayReader struct{}
 
-	var tokens []string
-	for len(name) > 0 {
-		idx := strings.IndexFunc(name[1:], unicode.IsUpper) + 1
-		if idx <= 0 {
-			tokens = append(tokens, strings.ToLower(name))
-			break
-		}
+var _emptyArray reader = (*emptyArrayReader)(nil)
 
-		tokens = append(tokens, strings.ToLower(name[:idx]))
-		name = name[idx:]
-	}
+func (*emptyArrayReader) more() bool { return false }
 
-	return strings.Join(tokens, "-")
+func (*emptyArrayReader) next() (value, error) {
+	return _invalid, io.EOF
+}
+
+type emptyObjectReader struct{}
+
+var _emptyObject objectReader = (*emptyObjectReader)(nil)
+
+func (*emptyObjectReader) more() bool { return false }
+
+func (*emptyObjectReader) next() (string, value, error) {
+	return "", _invalid, io.EOF
 }

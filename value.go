@@ -2,7 +2,6 @@ package shon
 
 import (
 	"fmt"
-	"io"
 )
 
 type valueType int
@@ -53,8 +52,8 @@ type objectReader interface {
 
 type value struct {
 	t valueType
-	b bool   // if boolType
-	s string // if scalarType
+	b bool   // set if boolType
+	s string // set if scalarType
 	i any    // reader if arrayType, objectReader if objectType
 
 	num bool // whether numeric if scalarType
@@ -80,24 +79,4 @@ func arrayValue(r reader) value {
 
 func objectValue(r objectReader) value {
 	return value{t: objectType, i: r}
-}
-
-type emptyArrayReader struct{}
-
-var _emptyArray reader = (*emptyArrayReader)(nil)
-
-func (*emptyArrayReader) more() bool { return false }
-
-func (*emptyArrayReader) next() (value, error) {
-	return _invalid, io.EOF
-}
-
-type emptyObjectReader struct{}
-
-var _emptyObject objectReader = (*emptyObjectReader)(nil)
-
-func (*emptyObjectReader) more() bool { return false }
-
-func (*emptyObjectReader) next() (string, value, error) {
-	return "", _invalid, io.EOF
 }
