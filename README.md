@@ -1,5 +1,8 @@
 # shon
 
+[![Go Reference](https://pkg.go.dev/badge/go.abhg.dev/shon.svg)](https://pkg.go.dev/go.abhg.dev/shon)
+[![Go](https://github.com/abhinav/shon-go/actions/workflows/ci.yml/badge.svg)](https://github.com/abhinav/shon-go/actions/workflows/ci.yml)
+
 shon is a Go library for parsing the SHON format.
 Read more about SHON below.
 
