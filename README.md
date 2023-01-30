@@ -2,6 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/go.abhg.dev/shon.svg)](https://pkg.go.dev/go.abhg.dev/shon)
 [![Go](https://github.com/abhinav/shon-go/actions/workflows/ci.yml/badge.svg)](https://github.com/abhinav/shon-go/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/abhinav/shon-go/branch/main/graph/badge.svg?token=SG8rMD57rN)](https://codecov.io/gh/abhinav/shon-go)
 
 shon is a Go library for parsing the SHON format.
 Read more about SHON below.
