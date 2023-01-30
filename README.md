@@ -36,7 +36,8 @@ The above will parse input like:
 
 ## What is SHON?
 
-SHON (**Sh**ell **O**bject **N**otation) is a notation
+SHON (pronounced 'shawn') is short for **Sh**ell **O**bject **N**otation.
+It is a notation
 for expressing complex objects at the command line.
 Because it is intended to be used on the command line,
 it aims to reduce extraneous commas and brackets.
