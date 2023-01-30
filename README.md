@@ -148,6 +148,16 @@ typically in a format that is easier to specify on the command line.
 
 The SHON format was invented by [Kris Kowal](https://github.com/kriskowal).
 
+## FAQ
+
+### Why?
+
+The project is only half-serious.
+The other half is whimsy.
+
+So, I guess because it was fun to write,
+and to possibly infect others with the idea
+
 ## License
 
 This project is made available under the MIT License.
