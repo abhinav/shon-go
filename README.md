@@ -83,7 +83,7 @@ typically in a format that is easier to specify on the command line.
 - Strings with spaces in them must be quoted.
 
     ```bash
-    "foo bar"  # == "foo"
+    "foo bar"  # == "foo bar"
     ```
 
 - Strings may be preceded by a `--` to escape them
