@@ -1,9 +1,9 @@
-// shon2json is a program that accepts SHON input on the command line
+// shon is a program that accepts SHON input on the command line
 // and prints an equivalent JSON object to stdout.
 //
 // Install it by running:
 //
-//	go install go.abhg.dev/shon/cmd/shon2json@latest
+//	go install go.abhg.dev/shon/cmd/shon@latest
 package main
 
 import (
