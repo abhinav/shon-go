@@ -6,7 +6,8 @@ import "fmt"
 type ParseOption interface{ applyParseOption(*parseOptions) }
 
 type parseOptions struct {
-	useNumber bool
+	useNumber      bool
+	implicitObject bool
 }
 
 func buildParseOptions(opts ...ParseOption) parseOptions {
@@ -36,4 +37,29 @@ func (o useNumberOption) String() string {
 
 func (o useNumberOption) applyParseOption(opts *parseOptions) {
 	opts.useNumber = bool(o)
+}
+
+// implicitObject specifies that Parse should assume it's inside an object
+// at the top level.
+// With this,
+//
+//	foo --bar baz --qux -t
+//
+// Is treated as if it was:
+//
+//	foo [ --bar baz --qux -t ]
+//
+// This option is not public -- users should use the ParseObject function.
+func implicitObject(b bool) ParseOption {
+	return implicitObjectOption(b)
+}
+
+type implicitObjectOption bool
+
+func (o implicitObjectOption) String() string {
+	return fmt.Sprintf("implicitObject(%v)", bool(o))
+}
+
+func (o implicitObjectOption) applyParseOption(opts *parseOptions) {
+	opts.implicitObject = bool(o)
 }
