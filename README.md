@@ -110,11 +110,10 @@ typically in a format that is easier to specify on the command line.
     -f  # false
     ```
 
-- `null` and `undefined` are expressed as `-n` and `-u` respectively.
+- `null` is expressed as `-n`.
 
     ```bash
     -n  # null
-    -u  # undefined
     ```
 
 - Arrays of values are expressed by wrapping the with `[`, `]`.

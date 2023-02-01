@@ -127,8 +127,6 @@ func (p *parser) valueFrom(arg string) (value, error) {
 		return boolValue(arg == "-t"), nil
 	case "-n":
 		return _null, nil
-	case "-u":
-		return _undefined, nil
 	case "--":
 		v, ok := p.next()
 		if !ok {

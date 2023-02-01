@@ -16,7 +16,6 @@ func TestValueType_String(t *testing.T) {
 	}{
 		{invalidType, "invalid"},
 		{nullType, "null"},
-		{undefinedType, "undefined"},
 		{boolType, "bool"},
 		{stringType, "string"},
 		{scalarType, "scalar"},
