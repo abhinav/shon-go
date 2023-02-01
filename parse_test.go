@@ -329,6 +329,69 @@ func TestParseAny(t *testing.T) {
 	}
 }
 
+func TestParseObject(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		desc string
+		give []string
+		want any
+	}{
+		{
+			desc: "no arguments/empty struct",
+			give: []string{},
+			want: struct{}{},
+		},
+		{
+			desc: "no arguments/non-empty struct",
+			give: []string{},
+			want: struct{ Foo string }{},
+		},
+		{
+			desc: "simple arguments",
+			give: []string{
+				"--foo", "42",
+				"--bar", "--", "-t",
+			},
+			want: struct {
+				Foo int8
+				Bar string
+			}{
+				Foo: 42,
+				Bar: "-t",
+			},
+		},
+		{
+			desc: "nested list and object",
+			give: []string{
+				"--items", "[", "1", "2", "3", "]",
+				"--pairs", "[", "--foo", "bar", "--baz", "qux", "]",
+			},
+			want: struct {
+				Items []int
+				Pairs map[string]string
+			}{
+				Items: []int{1, 2, 3},
+				Pairs: map[string]string{
+					"foo": "bar",
+					"baz": "qux",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.desc, func(t *testing.T) {
+			t.Parallel()
+
+			got := reflect.New(reflect.TypeOf(tt.want))
+			require.NoError(t, ParseObject(tt.give, got.Interface()))
+			assert.Equal(t, tt.want, got.Elem().Interface())
+		})
+	}
+}
+
 func TestParse_decodeErrors(t *testing.T) {
 	t.Parallel()
 

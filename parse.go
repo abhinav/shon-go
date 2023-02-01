@@ -76,7 +76,14 @@ func Parse(args []string, v any, opts ...ParseOption) error {
 	options := buildParseOptions(opts...)
 
 	cur := sliceCursor{args: args}
-	val, err := (&parser{cursor: &cur}).value()
+	p := parser{cursor: &cur}
+
+	readFn := (*parser).value
+	if options.implicitObject {
+		readFn = (*parser).object
+	}
+
+	val, err := readFn(&p)
 	if err != nil {
 		return err
 	}
@@ -97,6 +104,21 @@ func Parse(args []string, v any, opts ...ParseOption) error {
 
 	dst.Elem().Set(res)
 	return nil
+}
+
+// ParseObject is a variant of [Parse] that assumes an object at the top level.
+//
+// It treats the following argument list:
+//
+//	--first-name Jack --last-name Sparrow
+//
+// As if it was:
+//
+//	[ --first-name Jack --last-name Sparrow ]
+//
+// This makes it a good starting point for CLIs that want to accept flags.
+func ParseObject(args []string, v any, opts ...ParseOption) error {
+	return Parse(args, v, append(opts, implicitObject(true))...)
 }
 
 type parser struct {
@@ -160,9 +182,14 @@ func (p *parser) arrayOrObject() (value, error) {
 	}
 
 	if arg != "--" && strings.HasPrefix(arg, "--") {
-		return objectValue(&cursorObjectReader{p: p}), nil
+		return p.object()
 	}
 	return arrayValue(&cursorArrayReader{p: p}), nil
+}
+
+func (p *parser) object() (value, error) {
+	// Need an error return to match the signature of value().
+	return objectValue(&cursorObjectReader{p: p}), nil
 }
 
 type cursorArrayReader struct {
