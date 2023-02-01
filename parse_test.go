@@ -223,10 +223,6 @@ func TestParseAny(t *testing.T) {
 			want: nil,
 		},
 		{
-			give: []string{"-u"},
-			want: nil,
-		},
-		{
 			give: []string{"[", "]"},
 			want: array{},
 		},

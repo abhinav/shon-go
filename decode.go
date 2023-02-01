@@ -422,7 +422,7 @@ type anyDecoder struct {
 func (d *anyDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
 	v := reflect.New(d.t).Elem()
 	switch t.t {
-	case nullType, undefinedType:
+	case nullType:
 		v.Set(reflect.Zero(d.t))
 	case boolType:
 		v.Set(reflect.ValueOf(t.b))

@@ -7,14 +7,13 @@ import (
 type valueType int
 
 const (
-	invalidType   valueType = iota
-	nullType                // -n
-	undefinedType           // -u
-	boolType                // -t or -f
-	stringType              // explicitly a string
-	scalarType              // string, int, float, complex
-	arrayType               // [], [ ... ]
-	objectType              // [--], [ --k v ... ]
+	invalidType valueType = iota
+	nullType              // -n
+	boolType              // -t or -f
+	stringType            // explicitly a string
+	scalarType            // string, int, float, complex
+	arrayType             // [], [ ... ]
+	objectType            // [--], [ --k v ... ]
 )
 
 func (t valueType) String() string {
@@ -23,8 +22,6 @@ func (t valueType) String() string {
 		return "invalid"
 	case nullType:
 		return "null"
-	case undefinedType:
-		return "undefined"
 	case boolType:
 		return "bool"
 	case stringType:
@@ -60,9 +57,8 @@ type value struct {
 }
 
 var (
-	_invalid   = value{t: invalidType}
-	_null      = value{t: nullType}
-	_undefined = value{t: undefinedType}
+	_invalid = value{t: invalidType}
+	_null    = value{t: nullType}
 )
 
 func stringValue(s string) value {
