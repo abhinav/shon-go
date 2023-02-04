@@ -63,7 +63,7 @@ staticcheck: $(STATICCHECK)
 
 .PHONY: revive
 revive: $(REVIVE)
-	revive -config revive.toml ./...
+	revive -set_exit_status ./...
 
 .PHONY: tidycheck
 tidycheck:
