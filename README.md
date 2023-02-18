@@ -10,7 +10,7 @@ Read more about SHON below.
 ## Installation
 
 ```bash
-go get go.abhg.dev@latest
+go get go.abhg.dev/shon@latest
 ```
 
 ## Usage
