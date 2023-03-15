@@ -120,7 +120,7 @@ type boolDecoder struct {
 	t reflect.Type
 }
 
-func (d *boolDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
+func (d *boolDecoder) Decode(_ decodeCtx, t value) (reflect.Value, error) {
 	if t.t != boolType {
 		return reflect.Value{}, fmt.Errorf("expected %v, got %v", d.t, t.t)
 	}
@@ -135,7 +135,7 @@ type intDecoder struct {
 	bits int
 }
 
-func (d *intDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
+func (d *intDecoder) Decode(_ decodeCtx, t value) (reflect.Value, error) {
 	if t.t != scalarType {
 		return reflect.Value{}, fmt.Errorf("expected %v, got %v", d.t, t.t)
 	}
@@ -155,7 +155,7 @@ type uintDecoder struct {
 	bits int
 }
 
-func (d *uintDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
+func (d *uintDecoder) Decode(_ decodeCtx, t value) (reflect.Value, error) {
 	if t.t != scalarType {
 		return reflect.Value{}, fmt.Errorf("expected %v, got %v", d.t, t.t)
 	}
@@ -175,7 +175,7 @@ type floatDecoder struct {
 	bits int
 }
 
-func (d *floatDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
+func (d *floatDecoder) Decode(_ decodeCtx, t value) (reflect.Value, error) {
 	if t.t != scalarType {
 		return reflect.Value{}, fmt.Errorf("expected %v, got %v", d.t, t.t)
 	}
@@ -195,7 +195,7 @@ type complexDecoder struct {
 	bits int
 }
 
-func (d *complexDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
+func (d *complexDecoder) Decode(_ decodeCtx, t value) (reflect.Value, error) {
 	if t.t != scalarType {
 		return reflect.Value{}, fmt.Errorf("expected %v, got %v", d.t, t.t)
 	}
@@ -214,7 +214,7 @@ type stringDecoder struct {
 	t reflect.Type
 }
 
-func (d *stringDecoder) Decode(ctx decodeCtx, t value) (reflect.Value, error) {
+func (d *stringDecoder) Decode(_ decodeCtx, t value) (reflect.Value, error) {
 	switch t.t {
 	case scalarType, stringType:
 		// ok
