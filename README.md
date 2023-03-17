@@ -7,6 +7,11 @@
 shon is a Go library for parsing the SHON format.
 Read more about SHON below.
 
+## Playground
+
+A web-based playground to experiment with SHON is available at:
+<https://abhinav.github.io/shon-go/playground>.
+
 ## Installation
 
 ```bash

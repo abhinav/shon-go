@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>goldmark-anchor</title>
+    <script src="wasm_exec.js"></script>
+    <script>
+      const go = new Go();
+      WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+        go.run(result.instance);
+      });
+    </script>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      .container {
+        max-width: 100%;
+        margin: 0 auto;
+        position: relative;
+      }
+      .input-container {
+        padding: 1em;
+      }
+      .output-container {
+        border: 1px solid #ccc;
+        padding: 1em;
+      }
+
+      #input {
+        width: 100%;
+      }
+
+      #error { background-color: #fdd; }
+
+      a.anchor { text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <center>
+      <h1><a href="https://github.com/abhinav/shon-go">shon</a></h1>
+    </center>
+
+    <div class="container">
+      <div class="input-container">
+        <strong>Input</strong>
+        <textarea id="input" rows="5" cols="80"></textarea>
+      </div>
+
+      <div class="output-container">
+        <h2>Output</h2>
+        <pre><code id="output"></code></pre>
+
+        <div id="error"></div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    const input = document.getElementById("input");
+    const output = document.getElementById("output");
+    const error = document.getElementById("error");
+
+    input.addEventListener("input", refresh);
+
+    function refresh() {
+      const res = shon2json(input.value);
+      if (res.error) {
+        error.innerHTML = res.error;
+        output.innerHTML = "";
+      } else {
+        error.innerHTML = "";
+        output.innerHTML = res.json;
+      }
+    }
+  </script>
+</html>
