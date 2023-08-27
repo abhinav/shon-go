@@ -18,14 +18,25 @@ func main() {
 				return js.ValueOf(fmt.Errorf("expected 1 argument, got %d", len(args)))
 			}
 
-			prompt := args[0].String()
-			res, err := shon2json(prompt)
+			var req request
+			req.Decode(args[0])
+			res, err := shon2json(req)
 			if err != nil {
 				return (&result{Err: err}).Encode()
 			}
 			return (&result{JSON: res}).Encode()
 		}))
 	select {}
+}
+
+type request struct {
+	Prompt string
+	Object bool
+}
+
+func (r *request) Decode(v js.Value) {
+	r.Prompt = v.Get("prompt").String()
+	r.Object = v.Get("object").Bool()
 }
 
 type result struct {
@@ -44,14 +55,19 @@ func (r *result) Encode() js.Value {
 	return js.ValueOf(result)
 }
 
-func shon2json(prompt string) (string, error) {
-	args, err := shlex.Split(prompt)
+func shon2json(req request) (string, error) {
+	args, err := shlex.Split(req.Prompt)
 	if err != nil {
 		return "", fmt.Errorf("split shell: %w", err)
 	}
 
+	parser := shon.Parse
+	if req.Object {
+		parser = shon.ParseObject
+	}
+
 	var result any
-	if err := shon.Parse(args, &result); err != nil {
+	if err := parser(args, &result); err != nil {
 		return "", fmt.Errorf("parse SHON: %w", err)
 	}
 
