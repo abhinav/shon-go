@@ -46,6 +46,9 @@
       <div class="input-container">
         <strong>Input</strong>
         <textarea id="input" rows="5" cols="80"></textarea>
+
+        <label for="object">Assume object</label>
+        <input type="checkbox" id="object" checked>
       </div>
 
       <div class="output-container">
@@ -60,12 +63,17 @@
   <script>
     const input = document.getElementById("input");
     const output = document.getElementById("output");
+    const object = document.getElementById("object");
     const error = document.getElementById("error");
 
     input.addEventListener("input", refresh);
+    object.addEventListener("change", refresh);
 
     function refresh() {
-      const res = shon2json(input.value);
+      const res = shon2json({
+        prompt: input.value,
+        object: object.checked,
+      });
       if (res.error) {
         error.innerHTML = res.error;
         output.innerHTML = "";
