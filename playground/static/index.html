@@ -19,13 +19,27 @@
         max-width: 100%;
         margin: 0 auto;
         position: relative;
+        display: grid;
+        grid-template-columns: 3fr 2fr;
       }
+
       .input-container {
         padding: 1em;
       }
       .output-container {
         border: 1px solid #ccc;
         padding: 1em;
+      }
+
+      .cheat-sheet { padding: 1em; }
+
+      .cheat-sheet table { width: 100%; }
+      .cheat-sheet table td {
+        border-bottom: 1px solid #ccc;
+        padding: 0.1em;
+      }
+      .cheat-sheet table tr.even {
+        background-color: #f8f8f8;
       }
 
       #input {
@@ -43,20 +57,116 @@
     </center>
 
     <div class="container">
-      <div class="input-container">
-        <strong>Input</strong>
-        <textarea id="input" rows="5" cols="80"></textarea>
 
-        <label for="object">Assume object</label>
-        <input type="checkbox" id="object" checked>
+      <div class="left">
+        <div class="input-container">
+          <strong>SHON</strong>
+          <textarea id="input" rows="5" cols="80"></textarea>
+
+          <label for="object">Assume object</label>
+          <input type="checkbox" id="object" checked>
+        </div>
+
+        <div class="output-container">
+          <h2>JSON</h2>
+          <pre><code id="output"></code></pre>
+
+          <div id="error"></div>
+        </div>
       </div>
 
-      <div class="output-container">
-        <h2>Output</h2>
-        <pre><code id="output"></code></pre>
+      <div class="right">
+        <div class="cheat-sheet">
+          <h3>Examples</h3>
 
-        <div id="error"></div>
+          <table>
+            <thead>
+              <tr class="header">
+                <th>JSON</th>
+                <th>SHON</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr class="odd">
+                <td><code class="example-json">{"hello": "World"}</code></td>
+                <td><code class="example-shon">[ --hello World ]</code></td>
+              </tr>
+              <tr class="even">
+                <td><code class="example-json">["beep", "boop"]</code></td>
+                <td><code class="example-shon">[ beep boop ]</code></td>
+              </tr>
+              <tr class="odd">
+                <td><code class="example-json">[1, 2, 3]</code></td>
+                <td><code class="example-shon">[ 1 2 3 ]</code></td>
+              </tr>
+              <tr class="even">
+                <td><code class="example-json">[]</code></td>
+                <td><code class="example-shon">[ ]</code> or <code>[]</code></td>
+              </tr>
+              <tr class="odd">
+                <td><code class="example-json">{"a": 10, b: 20}</code></td>
+                <td><code class="example-shon">[ --a 10 --b 20 ]</code></td>
+              </tr>
+              <tr class="even">
+                <td><code class="example-json">{}</code></td>
+                <td><code class="example-shon">[--]</code></td>
+              </tr>
+              <tr class="odd">
+                <td><code class="example-json">1</code></td>
+                <td><code class="example-shon">1</code></td>
+              </tr>
+              <tr class="even">
+                <td><code class="example-json">-1</code></td>
+                <td><code class="example-shon">-1</code></td>
+              </tr>
+              <tr class="odd">
+                <td><code class="example-json">1e3</code></td>
+                <td><code class="example-shon">1e3</code></td>
+              </tr>
+              <tr class="even">
+                <td><code class="example-json">"hello"</code></td>
+                <td><code class="example-shon">hello</code></td>
+              </tr>
+              <tr class="odd">
+                <td><code class="example-json">"hello world"</code></td>
+                <td><code class="example-shon">'hello world'</code></td>
+              </tr>
+              <tr class="even">
+                <td><code class="example-json">"10"</code></td>
+                <td><code class="example-shon">-- 10</code></td>
+              </tr>
+              <tr class="odd">
+                <td><code class="example-json">"-10"</code></td>
+                <td><code class="example-shon">-- -10</code></td>
+              </tr>
+              <tr class="even">
+                <td><code class="example-json">"-"</code></td>
+                <td><code class="example-shon">-- -</code></td>
+              </tr>
+              <tr class="odd">
+                <td><code class="example-json">"--"</code></td>
+                <td><code class="example-shon">-- --</code></td>
+              </tr>
+              <tr class="even">
+                <td><code class="example-json">true</code></td>
+                <td><code class="example-shon">-t</code></td>
+              </tr>
+              <tr class="odd">
+                <td><code class="example-json">false</code></td>
+                <td><code class="example-shon">-f</code></td>
+              </tr>
+              <tr class="even">
+                <td><code class="example-json">null</code></td>
+                <td><code class="example-shon">-n</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>Click an example to try it out.</p>
+        </div>
       </div>
+
     </div>
   </body>
 
@@ -81,6 +191,29 @@
         error.innerHTML = "";
         output.innerHTML = res.json;
       }
+    }
+
+    function pickSHONExample(e) {
+      input.value = e.target.innerText;
+      object.checked = false; // examples are not objects
+      refresh();
+    }
+
+    const shonExamples = document.getElementsByClassName("example-shon");
+    for (let i = 0; i < shonExamples.length; i++) {
+      shonExamples[i].addEventListener("click", pickSHONExample);
+    }
+
+    function pickJSONExample(e) {
+      // Pick the sibling column in the same row.
+      input.value = e.target.parentElement.nextElementSibling.firstElementChild.innerText;
+      object.checked = false; // examples are not objects
+      refresh();
+    }
+
+    const jsonExamples = document.getElementsByClassName("example-json");
+    for (let i = 0; i < jsonExamples.length; i++) {
+      jsonExamples[i].addEventListener("click", pickJSONExample);
     }
   </script>
 </html>
