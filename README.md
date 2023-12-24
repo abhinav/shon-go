@@ -166,4 +166,4 @@ and to possibly infect others with the idea
 
 ## License
 
-This project is made available under the MIT License.
+This project is made available under the BSD3 License.
