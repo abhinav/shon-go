@@ -42,7 +42,7 @@ jobs:
           make -C playground
           cp -r playground/static _site/playground
       - name: Upload pages
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
 
   publish:
     name: Publish website
